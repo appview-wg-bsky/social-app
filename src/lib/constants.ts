@@ -3,9 +3,9 @@ import {AppBskyActorDefs} from '@atproto/api'
 
 export const LOCAL_DEV_SERVICE =
   Platform.OS === 'android' ? 'http://10.0.2.2:2583' : 'http://localhost:2583'
-export const STAGING_SERVICE = 'https://staging.bsky.dev'
-export const BSKY_SERVICE = 'https://bsky.social'
-export const PUBLIC_BSKY_SERVICE = 'https://public.api.bsky.app'
+export const STAGING_SERVICE = process.env.EXPO_PUBLIC_STAGING_SERVICE
+export const BSKY_SERVICE = process.env.EXPO_PUBLIC_BSKY_SERVICE
+export const PUBLIC_BSKY_SERVICE = process.env.EXPO_PUBLIC_PUBLIC_BSKY_SERVICE
 export const DEFAULT_SERVICE = BSKY_SERVICE
 const HELP_DESK_LANG = 'en-us'
 export const HELP_DESK_URL = `https://blueskyweb.zendesk.com/hc/${HELP_DESK_LANG}`
@@ -69,7 +69,7 @@ export function IS_PROD_SERVICE(url?: string) {
 }
 
 export const PROD_DEFAULT_FEED = (rkey: string) =>
-  `at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/${rkey}`
+  process.env.EXPO_PUBLIC_DEFAULT_FEED
 
 export const POST_IMG_MAX = {
   width: 2000,
@@ -116,7 +116,7 @@ export const BSKY_FEED_OWNER_DIDS = [
 ]
 
 export const DISCOVER_FEED_URI =
-  'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot'
+  process.env.EXPO_PUBLIC_DISCOVER_FEED_URI
 export const DISCOVER_SAVED_FEED = {
   type: 'feed',
   value: DISCOVER_FEED_URI,
