@@ -22,9 +22,13 @@ import {
 import {SessionAccount} from './types'
 import {isSessionExpired, isSignupQueued} from './util'
 
+const PROXY_DID = "did:web:bsky.zeppelin.social#bsky_appview";
+
 export function createPublicAgent() {
-  configureModerationForGuest() // Side effect but only relevant for tests
-  return new BskyAppAgent({service: PUBLIC_BSKY_SERVICE})
+  configureModerationForGuest() // Side effect but only relevant for tests.
+  const agent = new BskyAppAgent({service: PUBLIC_BSKY_SERVICE})
+  agent.configureProxy(PROXY_DID)
+  return agent
 }
 
 export async function createAgentAndResume(
@@ -36,6 +40,7 @@ export async function createAgentAndResume(
   ) => void,
 ) {
   const agent = new BskyAppAgent({service: storedAccount.service})
+  agent.configureProxy(PROXY_DID)
   if (storedAccount.pdsUrl) {
     agent.sessionManager.pdsUrl = new URL(storedAccount.pdsUrl)
   }
@@ -84,7 +89,7 @@ export async function createAgentAndLogin(
 ) {
   const agent = new BskyAppAgent({service})
   await agent.login({identifier, password, authFactorToken})
-
+  agent.configureProxy(PROXY_DID)
   const account = agentToSessionAccountOrThrow(agent)
   const gates = tryFetchGates(account.did, 'prefer-fresh-gates')
   const moderation = configureModerationForAccount(agent, account)
@@ -118,6 +123,7 @@ export async function createAgentAndCreateAccount(
   ) => void,
 ) {
   const agent = new BskyAppAgent({service})
+  agent.configureProxy(PROXY_DID)
   await agent.createAccount({
     email,
     password,
@@ -261,6 +267,7 @@ class BskyAppAgent extends BskyAgent {
         }
       },
     })
+    this.proxy = PROXY_DID
   }
 
   async prepare(
