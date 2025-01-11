@@ -107,7 +107,7 @@ export const LANG_DROPDOWN_HITSLOP = {top: 10, bottom: 10, left: 4, right: 4}
 export const BACK_HITSLOP = HITSLOP_30
 export const MAX_POST_LINES = 25
 
-export const BSKY_APP_ACCOUNT_DID = 'did:plc:z72i7hdynmk6r22z27h6tvur'
+export const BSKY_APP_ACCOUNT_DID = process.env.EXPO_PUBLIC_BSKY_APP_ACCOUNT_DID
 
 export const BSKY_FEED_OWNER_DIDS = [
   BSKY_APP_ACCOUNT_DID,
@@ -115,8 +115,7 @@ export const BSKY_FEED_OWNER_DIDS = [
   'did:plc:q6gjnaw2blty4crticxkmujt',
 ]
 
-export const DISCOVER_FEED_URI =
-  process.env.EXPO_PUBLIC_DISCOVER_FEED_URI
+export const DISCOVER_FEED_URI = process.env.EXPO_PUBLIC_DISCOVER_FEED_URI
 export const DISCOVER_SAVED_FEED = {
   type: 'feed',
   value: DISCOVER_FEED_URI,
