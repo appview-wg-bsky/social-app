@@ -69,7 +69,7 @@ export function IS_PROD_SERVICE(url?: string) {
 }
 
 export const PROD_DEFAULT_FEED = (rkey: string) =>
-  process.env.EXPO_PUBLIC_DEFAULT_FEED
+  (process.env.EXPO_PUBLIC_DEFAULT_FEED as string).replace('%s', rkey)
 
 export const POST_IMG_MAX = {
   width: 2000,
