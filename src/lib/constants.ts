@@ -16,6 +16,9 @@ export const STARTER_PACK_MAX_SIZE = 150
 export const BSKY_CHAT_DID_REFERENCE =
   process.env.EXPO_PUBLIC_BSKY_CHAT_DID_REFERENCE
 export const BSKY_APP_HOSTNAME = process.env.EXPO_PUBLIC_BSKY_APP_HOSTNAME
+const VIDEO_HOSTNAME = process.env.EXPO_PUBLIC_BSKY_VIDEO_HOSTNAME
+export const VIDEO_SERVICE = `https://${VIDEO_HOSTNAME}`
+export const VIDEO_SERVICE_DID = `did:web:${VIDEO_HOSTNAME}`
 
 // HACK
 // Yes, this is exactly what it looks like. It's a hard-coded constant
@@ -147,9 +150,6 @@ export const GIF_FEATURED = (params: string) =>
   `${GIF_SERVICE}/tenor/v2/featured?${params}`
 
 export const MAX_LABELERS = 20
-
-export const VIDEO_SERVICE = 'https://video.bsky.app'
-export const VIDEO_SERVICE_DID = 'did:web:video.bsky.app'
 
 export const SUPPORTED_MIME_TYPES = [
   'video/mp4',
