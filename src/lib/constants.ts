@@ -15,6 +15,7 @@ export const BSKY_DOWNLOAD_URL = 'https://bsky.app/download'
 export const STARTER_PACK_MAX_SIZE = 150
 export const BSKY_CHAT_DID_REFERENCE =
   process.env.EXPO_PUBLIC_BSKY_CHAT_DID_REFERENCE
+export const BSKY_APP_HOSTNAME = process.env.EXPO_PUBLIC_BSKY_APP_HOSTNAME
 
 // HACK
 // Yes, this is exactly what it looks like. It's a hard-coded constant
