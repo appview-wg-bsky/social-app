@@ -8,6 +8,7 @@ import {
   IS_PROD_SERVICE,
   PUBLIC_BSKY_SERVICE,
   TIMELINE_SAVED_FEED,
+  ZEPPELIN_APPVIEW_PROXY_DID,
 } from '#/lib/constants'
 import {tryFetchGates} from '#/lib/statsig/statsig'
 import {getAge} from '#/lib/strings/time'
@@ -266,6 +267,8 @@ class BskyAppAgent extends BskyAgent {
         }
       },
     })
+
+    this.configureProxy(ZEPPELIN_APPVIEW_PROXY_DID)
   }
 
   async prepare(
