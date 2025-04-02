@@ -14,6 +14,7 @@ import {Provider as LanguagesProvider} from './languages'
 import {Provider as LargeAltBadgeProvider} from './large-alt-badge'
 import {Provider as NoAppLabelersProvider} from './no-app-labelers'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
+import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as TrendingSettingsProvider} from './trending'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
@@ -52,8 +53,10 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
                               <UsedStarterPacksProvider>
                                 <SubtitlesProvider>
                                   <TrendingSettingsProvider>
-                                    <KawaiiProvider>{children}</KawaiiProvider>
-                                  </TrendingSettingsProvider>
+                                    <RepostCarouselProvider>
+                                        <KawaiiProvider>{children}</KawaiiProvider>
+                                    </RepostCarouselProvider>
+                                </TrendingSettingsProvider>
                                 </SubtitlesProvider>
                               </UsedStarterPacksProvider>
                             </AutoplayProvider>
