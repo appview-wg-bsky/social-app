@@ -19,6 +19,7 @@ import {
 } from '#/lib/strings/url-helpers'
 import {isNative, isWeb} from '#/platform/detection'
 import {useModalControls} from '#/state/modals'
+import {useGoLinksEnabled} from '#/state/preferences'
 import {atoms as a, flatten, type TextStyleProp, useTheme, web} from '#/alf'
 import {Button, type ButtonProps} from '#/components/Button'
 import {useInteractionState} from '#/components/hooks/useInteractionState'
@@ -116,6 +117,8 @@ export function useLink({
   const {linkWarningDialogControl} = useGlobalDialogsControlContext()
   const openLink = useOpenLink()
 
+  const goLinksEnabled = useGoLinksEnabled()
+
   const onPress = React.useCallback(
     (e: GestureResponderEvent) => {
       const exitEarlyIfFalse = outerOnPress?.(e)
@@ -140,7 +143,8 @@ export function useLink({
         })
       } else {
         if (isExternal) {
-          openLink(href, overridePresentation, shouldProxy)
+          // openLink(href, overridePresentation, shouldProxy)
+          openLink(href, overridePresentation, goLinksEnabled && shouldProxy)
         } else {
           const shouldOpenInNewTab = shouldClickOpenNewTab(e)
 
