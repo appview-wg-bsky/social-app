@@ -32,28 +32,29 @@ export function useDirectFetchRecord({
       }
 
       try {
-        // TODO: parallel, series fetch sucks there isn't a dependency
-        const profile = (await agent.getProfile({actor: urip.host})).data
-        const {data} = await retry(
-          2,
-          e => {
-            if (e.message.includes(`Could not locate record:`)) {
-              return false
-            }
-            return true
-          },
-          () =>
-            agent.api.com.atproto.repo.getRecord({
-              repo: urip.host,
-              collection: 'app.bsky.feed.post',
-              rkey: urip.rkey,
-            }),
-        )
-        if (
-          data.value &&
-          bsky.validate(data.value, AppBskyFeedPost.validateRecord)
-        ) {
-          const record = data.value
+        const [profile, record] = await Promise.all([
+          (async () => (await agent.getProfile({actor: urip.host})).data)(),
+          (async () =>
+            (
+              await retry(
+                2,
+                e => {
+                  if (e.message.includes(`Could not locate record:`)) {
+                    return false
+                  }
+                  return true
+                },
+                () =>
+                  agent.api.com.atproto.repo.getRecord({
+                    repo: urip.host,
+                    collection: 'app.bsky.feed.post',
+                    rkey: urip.rkey,
+                  }),
+              )
+            ).data.value)(),
+        ])
+
+        if (record && bsky.validate(record, AppBskyFeedPost.validateRecord)) {
           return {
             $type: 'app.bsky.embed.record#viewRecord',
             uri,

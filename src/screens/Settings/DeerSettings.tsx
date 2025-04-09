@@ -1,8 +1,10 @@
 import {useState} from 'react'
+import {View} from 'react-native'
 import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {type NativeStackScreenProps} from '@react-navigation/native-stack'
 
+import {usePalette} from '#/lib/hooks/usePalette'
 import {type CommonNavigatorParams} from '#/lib/routes/types'
 import {type Gate} from '#/lib/statsig/gates'
 import {
@@ -10,6 +12,8 @@ import {
   useDangerousSetGate,
   useGatesCache,
 } from '#/lib/statsig/statsig'
+import {isWeb} from '#/platform/detection'
+import {setGeolocation, useGeolocation} from '#/state/geolocation'
 import {useGoLinksEnabled, useSetGoLinksEnabled} from '#/state/preferences'
 import {
   useConstellationEnabled,
@@ -19,16 +23,87 @@ import {
   useDirectFetchRecords,
   useSetDirectFetchRecords,
 } from '#/state/preferences/direct-fetch-records'
+import {TextInput} from '#/view/com/modals/util'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
+import {Button, ButtonText} from '#/components/Button'
+import * as Dialog from '#/components/Dialog'
 import * as Toggle from '#/components/forms/Toggle'
 import {Atom_Stroke2_Corner0_Rounded as DeerIcon} from '#/components/icons/Atom'
 import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/Eye'
+import {Earth_Stroke2_Corner2_Rounded as GlobeIcon} from '#/components/icons/Globe'
+import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon} from '#/components/icons/PaintRoller'
 import * as Layout from '#/components/Layout'
+import {Text} from '#/components/Typography'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams>
+
+function GeolocationSettingsDialog({
+  control,
+}: {
+  control: Dialog.DialogControlProps
+}) {
+  const pal = usePalette('default')
+  const {_} = useLingui()
+
+  const [hasChanged, setHasChanged] = useState(false)
+  const [countryCode, setCountryCode] = useState('')
+
+  const submit = () => {
+    setGeolocation({countryCode})
+    control.close()
+  }
+
+  return (
+    <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={_(msg`Geolocation ISO 3166-1 Code`)}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Geolocation ISO 3166-1 Code</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <TextInput
+            accessibilityLabel="Text input field"
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            value={countryCode}
+            onChangeText={value => {
+              setCountryCode(value.toUpperCase())
+              setHasChanged(true)
+            }}
+            maxLength={2}
+            placeholder="BR"
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={submit}
+            accessibilityHint={_(
+              msg`Input 2 letter ISO 3166-1 country code to use as location`,
+            )}
+          />
+
+          <View style={isWeb && [a.flex_row, a.justify_end]}>
+            <Button
+              label={hasChanged ? _(msg`Save location`) : _(msg`Done`)}
+              size="large"
+              onPress={submit}
+              variant="solid"
+              color="primary">
+              <ButtonText>
+                {hasChanged ? <Trans>Save</Trans> : <Trans>Done</Trans>}
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
 
 export function DeerSettingsScreen({}: Props) {
   const {_} = useLingui()
@@ -41,6 +116,9 @@ export function DeerSettingsScreen({}: Props) {
 
   const directFetchRecords = useDirectFetchRecords()
   const setDirectFetchRecords = useSetDirectFetchRecords()
+
+  const location = useGeolocation()
+  const setLocationControl = Dialog.useDialogControl()
 
   const [gates, setGatesView] = useState(Object.fromEntries(useGatesCache()))
   const dangerousSetGate = useDangerousSetGate()
@@ -121,6 +199,27 @@ export function DeerSettingsScreen({}: Props) {
             </Toggle.Item>
           </SettingsList.Group>
 
+          <SettingsList.Item>
+            <SettingsList.ItemIcon icon={GlobeIcon} />
+            <SettingsList.ItemText>
+              <Trans>{`ISO 3166-1 Location (currently ${
+                location.geolocation?.countryCode ?? '?'
+              })`}</Trans>
+            </SettingsList.ItemText>
+            <SettingsList.BadgeButton
+              label={_(msg`Change`)}
+              onPress={() => setLocationControl.open()}
+            />
+          </SettingsList.Item>
+          <SettingsList.Item>
+            <Admonition type="info" style={[a.flex_1]}>
+              <Trans>
+                Geolocation country code informs required regional labelers and
+                currency behavior.
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
+
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
             <SettingsList.ItemIcon icon={PaintRollerIcon} />
             <SettingsList.ItemText>
@@ -141,7 +240,7 @@ export function DeerSettingsScreen({}: Props) {
           </SettingsList.Group>
 
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
-            <SettingsList.ItemIcon icon={PaintRollerIcon} />
+            <SettingsList.ItemIcon icon={BeakerIcon} />
             <SettingsList.ItemText>
               <Trans>Gates</Trans>
             </SettingsList.ItemText>
@@ -176,6 +275,17 @@ export function DeerSettingsScreen({}: Props) {
           </SettingsList.Item>
         </SettingsList.Container>
       </Layout.Content>
+      <GeolocationSettingsDialog control={setLocationControl} />
     </Layout.Screen>
   )
+}
+
+const styles = {
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 16,
+  },
 }
