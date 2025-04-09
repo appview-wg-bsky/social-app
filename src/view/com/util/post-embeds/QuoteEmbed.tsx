@@ -37,6 +37,7 @@ import {useResolveLinkQuery} from '#/state/queries/resolve-link'
 import {useSession} from '#/state/session'
 import {atoms as a, useTheme} from '#/alf'
 import {EyeSlash_Stroke2_Corner0_Rounded as EyeSlashIcon} from '#/components/icons/EyeSlash'
+import {Loader} from '#/components/Loader'
 import {RichText} from '#/components/RichText'
 import {SubtleWebHover} from '#/components/SubtleWebHover'
 import * as bsky from '#/types/bsky'
@@ -114,13 +115,13 @@ export function MaybeQuoteEmbed({
     return (
       <View
         style={[styles.errorContainer, a.border, t.atoms.border_contrast_low]}>
-        <InfoCircleIcon size={18} style={pal.text} />
+        {directFetchEnabled ? (
+          <Loader size={'md'} style={pal.text} />
+        ) : (
+          <InfoCircleIcon size={18} style={pal.text} />
+        )}
         <Text type="lg" style={pal.text}>
-          {directFetchEnabled ? (
-            <Trans>Blocked...</Trans>
-          ) : (
-            <Trans>Blocked</Trans>
-          )}
+          <Trans>Blocked</Trans>
         </Text>
       </View>
     )
@@ -160,14 +161,17 @@ export function MaybeQuoteEmbed({
     return (
       <View
         style={[styles.errorContainer, a.border, t.atoms.border_contrast_low]}>
-        <InfoCircleIcon size={18} style={pal.text} />
+        {directFetchEnabled ? (
+          <Loader size={'md'} style={pal.text} />
+        ) : (
+          <InfoCircleIcon size={18} style={pal.text} />
+        )}
         <Text type="lg" style={pal.text}>
           {isViewerOwner ? (
             <Trans>Removed by you</Trans>
           ) : (
             <Trans>Removed by author</Trans>
           )}
-          {directFetchEnabled ? <Trans>...</Trans> : undefined}
         </Text>
       </View>
     )
