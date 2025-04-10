@@ -128,7 +128,7 @@ const schema = z.object({
   goLinksEnabled: z.boolean().optional(),
   constellationEnabled: z.boolean().optional(),
   directFetchRecords: z.boolean().optional(),
-  unfollowConfirm: z.boolean().optional(),
+  noAppLabelers: z.boolean().optional(),
 
   /** @deprecated */
   mutedThreads: z.array(z.string()),
@@ -186,7 +186,7 @@ export const defaults: Schema = {
   goLinksEnabled: true,
   constellationEnabled: false,
   directFetchRecords: false,
-  unfollowConfirm: false,
+  noAppLabelers: false,
 }
 
 export function tryParse(rawData: string): Schema | undefined {
