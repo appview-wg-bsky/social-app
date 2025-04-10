@@ -23,6 +23,10 @@ import {
   useDirectFetchRecords,
   useSetDirectFetchRecords,
 } from '#/state/preferences/direct-fetch-records'
+import {
+  useNoAppLabelers,
+  useSetNoAppLabelers,
+} from '#/state/preferences/no-app-labelers'
 import {TextInput} from '#/view/com/modals/util'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
@@ -35,6 +39,7 @@ import {Eye_Stroke2_Corner0_Rounded as VisibilityIcon} from '#/components/icons/
 import {Earth_Stroke2_Corner2_Rounded as GlobeIcon} from '#/components/icons/Globe'
 import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon} from '#/components/icons/PaintRoller'
+import {RaisingHand4Finger_Stroke2_Corner0_Rounded as RaisingHandIcon} from '#/components/icons/RaisingHand'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
 
@@ -117,6 +122,9 @@ export function DeerSettingsScreen({}: Props) {
   const directFetchRecords = useDirectFetchRecords()
   const setDirectFetchRecords = useSetDirectFetchRecords()
 
+  const noAppLabelers = useNoAppLabelers()
+  const setNoAppLabelers = useSetNoAppLabelers()
+
   const location = useGeolocation()
   const setLocationControl = Dialog.useDialogControl()
 
@@ -176,7 +184,8 @@ export function DeerSettingsScreen({}: Props) {
               style={[a.w_full]}>
               <Toggle.LabelText style={[a.flex_1]}>
                 <Trans>
-                  Fetch records directly from PDS to see through quote blocks
+                  Fetch records directly from PDS to see contents of blocked and
+                  detatched quotes
                 </Trans>
               </Toggle.LabelText>
               <Toggle.Platform />
@@ -214,11 +223,45 @@ export function DeerSettingsScreen({}: Props) {
           <SettingsList.Item>
             <Admonition type="info" style={[a.flex_1]}>
               <Trans>
-                Geolocation country code informs required regional labelers and
-                currency behavior.
+                Geolocation country code informs required regional app labelers
+                and currency behavior.
               </Trans>
             </Admonition>
           </SettingsList.Item>
+
+          <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
+            <SettingsList.ItemIcon icon={RaisingHandIcon} />
+            <SettingsList.ItemText>
+              <Trans>Labelers</Trans>
+            </SettingsList.ItemText>
+            <Toggle.Item
+              name="no_app_labelers"
+              label={_(msg`Do not declare any app labelers`)}
+              value={noAppLabelers}
+              onChange={value => setNoAppLabelers(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>Do not declare any default app labelers</Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
+            <Admonition type="warning" style={[a.flex_1]}>
+              <Trans>Restart app after changing this setting.</Trans>
+            </Admonition>
+            <Admonition type="tip" style={[a.flex_1]}>
+              <Trans>
+                Some appviews will default to using an app labeler if you have
+                no labelers, so consider subscribing to at least one labeler.
+              </Trans>
+            </Admonition>
+            <Admonition type="info" style={[a.flex_1]}>
+              <Trans>
+                App labelers are mandatory top-level labelers that can perform
+                "takedowns". This setting does not influence geolocation based
+                labelers.
+              </Trans>
+            </Admonition>
+          </SettingsList.Group>
 
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
             <SettingsList.ItemIcon icon={PaintRollerIcon} />
