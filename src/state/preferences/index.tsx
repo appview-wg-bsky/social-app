@@ -13,6 +13,7 @@ import {Provider as KawaiiProvider} from './kawaii'
 import {Provider as LanguagesProvider} from './languages'
 import {Provider as LargeAltBadgeProvider} from './large-alt-badge'
 import {Provider as NoAppLabelersProvider} from './no-app-labelers'
+import {Provider as NoDiscoverProvider} from './no-discover-fallback'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as TrendingSettingsProvider} from './trending'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
@@ -41,25 +42,27 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
           <NoAppLabelersProvider>
             <DirectFetchRecordsProvider>
               <ConstellationProvider>
-                <LargeAltBadgeProvider>
-                  <ExternalEmbedsProvider>
-                    <HiddenPostsProvider>
-                      <InAppBrowserProvider>
-                        <DisableHapticsProvider>
-                          <AutoplayProvider>
-                            <UsedStarterPacksProvider>
-                              <SubtitlesProvider>
-                                <TrendingSettingsProvider>
-                                  <KawaiiProvider>{children}</KawaiiProvider>
-                                </TrendingSettingsProvider>
-                              </SubtitlesProvider>
-                            </UsedStarterPacksProvider>
-                          </AutoplayProvider>
-                        </DisableHapticsProvider>
-                      </InAppBrowserProvider>
-                    </HiddenPostsProvider>
-                  </ExternalEmbedsProvider>
-                </LargeAltBadgeProvider>
+                <NoDiscoverProvider>
+                  <LargeAltBadgeProvider>
+                    <ExternalEmbedsProvider>
+                      <HiddenPostsProvider>
+                        <InAppBrowserProvider>
+                          <DisableHapticsProvider>
+                            <AutoplayProvider>
+                              <UsedStarterPacksProvider>
+                                <SubtitlesProvider>
+                                  <TrendingSettingsProvider>
+                                    <KawaiiProvider>{children}</KawaiiProvider>
+                                  </TrendingSettingsProvider>
+                                </SubtitlesProvider>
+                              </UsedStarterPacksProvider>
+                            </AutoplayProvider>
+                          </DisableHapticsProvider>
+                        </InAppBrowserProvider>
+                      </HiddenPostsProvider>
+                    </ExternalEmbedsProvider>
+                  </LargeAltBadgeProvider>
+                </NoDiscoverProvider>
               </ConstellationProvider>
             </DirectFetchRecordsProvider>
           </NoAppLabelersProvider>

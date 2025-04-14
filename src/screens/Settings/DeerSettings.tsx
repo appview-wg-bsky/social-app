@@ -27,6 +27,10 @@ import {
   useNoAppLabelers,
   useSetNoAppLabelers,
 } from '#/state/preferences/no-app-labelers'
+import {
+  useNoDiscoverFallback,
+  useSetNoDiscoverFallback,
+} from '#/state/preferences/no-discover-fallback'
 import {TextInput} from '#/view/com/modals/util'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
@@ -124,6 +128,9 @@ export function DeerSettingsScreen({}: Props) {
 
   const noAppLabelers = useNoAppLabelers()
   const setNoAppLabelers = useSetNoAppLabelers()
+
+  const noDiscoverFallback = useNoDiscoverFallback()
+  const setNoDiscoverFallback = useSetNoDiscoverFallback()
 
   const location = useGeolocation()
   const setLocationControl = Dialog.useDialogControl()
@@ -277,14 +284,13 @@ export function DeerSettingsScreen({}: Props) {
               <Trans>Tweaks</Trans>
             </SettingsList.ItemText>
             <Toggle.Item
-              name="under construction"
-              label={_(msg`🚧 under construction...`)}
-              value={false}
-              onChange={() => {}}
-              disabled={true}
+              name="no_discover_fallback"
+              label={_(msg`Do not fall back to discover feed`)}
+              value={noDiscoverFallback}
+              onChange={value => setNoDiscoverFallback(value)}
               style={[a.w_full]}>
               <Toggle.LabelText style={[a.flex_1]}>
-                <Trans>🚧 under construction...</Trans>
+                <Trans>Do not fall back to discover feed</Trans>
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>
