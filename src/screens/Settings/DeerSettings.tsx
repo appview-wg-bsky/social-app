@@ -245,15 +245,23 @@ export function DeerSettingsScreen({}: Props) {
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>
+          </SettingsList.Group>
+
+          <SettingsList.Item>
             <Admonition type="warning" style={[a.flex_1]}>
               <Trans>Restart app after changing this setting.</Trans>
             </Admonition>
+          </SettingsList.Item>
+          <SettingsList.Item>
             <Admonition type="tip" style={[a.flex_1]}>
               <Trans>
                 Some appviews will default to using an app labeler if you have
-                no labelers, so consider subscribing to at least one labeler.
+                no labelers, so consider subscribing to at least one labeler if
+                you have issues.
               </Trans>
             </Admonition>
+          </SettingsList.Item>
+          <SettingsList.Item>
             <Admonition type="info" style={[a.flex_1]}>
               <Trans>
                 App labelers are mandatory top-level labelers that can perform
@@ -261,7 +269,7 @@ export function DeerSettingsScreen({}: Props) {
                 labelers.
               </Trans>
             </Admonition>
-          </SettingsList.Group>
+          </SettingsList.Item>
 
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
             <SettingsList.ItemIcon icon={PaintRollerIcon} />
