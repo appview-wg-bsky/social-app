@@ -39,7 +39,7 @@ export const TermsOfServiceScreen = (_props: Props) => {
             <TextLink
               style={pal.link}
               href="https://deer.social/about/tos"
-              text="bsky.social/about/support/tos"
+              text="deer.social/about/tos"
             />
           </Text>
         </View>
