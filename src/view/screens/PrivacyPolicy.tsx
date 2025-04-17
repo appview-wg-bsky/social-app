@@ -40,7 +40,7 @@ export const PrivacyPolicyScreen = (_props: Props) => {
               <TextLink
                 style={pal.link}
                 href="https://deer.social/about/privacy"
-                text="bsky.social/about/support/privacy-policy"
+                text="deer.social/about/privacy"
               />
             </Trans>
           </Text>
