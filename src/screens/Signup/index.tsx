@@ -27,8 +27,15 @@ import {LinearGradientBackground} from '#/components/LinearGradientBackground'
 import {InlineLinkText} from '#/components/Link'
 import {Text} from '#/components/Typography'
 import * as bsky from '#/types/bsky'
+import {StepAtmosphere} from './StepAtmosphere'
 
-export function Signup({onPressBack}: {onPressBack: () => void}) {
+export function Signup({
+  onPressBack,
+  onPressSignIn,
+}: {
+  onPressBack: () => void
+  onPressSignIn: () => void
+}) {
   const {_} = useLingui()
   const t = useTheme()
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -149,12 +156,14 @@ export function Signup({onPressBack}: {onPressBack: () => void}) {
                   Step {state.activeStep + 1} of{' '}
                   {state.serviceDescription &&
                   !state.serviceDescription.phoneVerificationRequired
-                    ? '2'
-                    : '3'}
+                    ? '3'
+                    : '4'}
                 </Trans>
               </Text>
               <Text style={[a.text_3xl, a.font_bold]}>
-                {state.activeStep === SignupStep.INFO ? (
+                {state.activeStep == SignupStep.ATMOSPHERE ? (
+                  <Trans>The ATmosphere ✨</Trans>
+                ) : state.activeStep === SignupStep.INFO ? (
                   <Trans>Your account</Trans>
                 ) : state.activeStep === SignupStep.HANDLE ? (
                   <Trans>Choose your username</Trans>
@@ -165,7 +174,12 @@ export function Signup({onPressBack}: {onPressBack: () => void}) {
             </View>
 
             <LayoutAnimationConfig skipEntering skipExiting>
-              {state.activeStep === SignupStep.INFO ? (
+              {state.activeStep === SignupStep.ATMOSPHERE ? (
+                <StepAtmosphere
+                  onPressBack={onPressBack}
+                  onPressSignIn={onPressSignIn}
+                />
+              ) : state.activeStep === SignupStep.INFO ? (
                 <StepInfo
                   onPressBack={onPressBack}
                   isLoadingStarterPack={
@@ -197,7 +211,7 @@ export function Signup({onPressBack}: {onPressBack: () => void}) {
                   label={_(msg`Contact support`)}
                   to={FEEDBACK_FORM_URL({email: state.email})}
                   style={[!gtMobile && a.text_md]}>
-                  <Trans>Contact support</Trans>
+                  <Trans>Open a Github Issue</Trans>
                 </InlineLinkText>
               </Text>
             </View>
