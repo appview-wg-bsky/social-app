@@ -8,6 +8,7 @@ import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import * as EmailValidator from 'email-validator'
 
+import {DEFAULT_SERVICE} from '#/lib/constants'
 import {cleanError} from '#/lib/strings/errors'
 import {createFullHandle} from '#/lib/strings/handles'
 import {getAge} from '#/lib/strings/time'
@@ -20,7 +21,6 @@ export type ServiceDescription = ComAtprotoServerDescribeServer.OutputSchema
 const DEFAULT_DATE = new Date(Date.now() - 60e3 * 60 * 24 * 365 * 20) // default to 20 years ago
 
 export enum SignupStep {
-  ATMOSPHERE,
   INFO,
   HANDLE,
   CAPTCHA,
@@ -83,9 +83,9 @@ export type SignupAction =
 
 export const initialState: SignupState = {
   hasPrev: false,
-  activeStep: SignupStep.ATMOSPHERE,
+  activeStep: SignupStep.INFO,
 
-  serviceUrl: 'https://example.com',
+  serviceUrl: DEFAULT_SERVICE,
   serviceDescription: undefined,
   userDomain: '',
   dateOfBirth: DEFAULT_DATE,
@@ -125,7 +125,7 @@ export function reducer(s: SignupState, a: SignupAction): SignupState {
 
   switch (a.type) {
     case 'prev': {
-      if (s.activeStep !== SignupStep.ATMOSPHERE) {
+      if (s.activeStep !== SignupStep.INFO) {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
         next.activeStep--
         next.error = ''
@@ -230,7 +230,7 @@ export function reducer(s: SignupState, a: SignupAction): SignupState {
     }
   }
 
-  next.hasPrev = next.activeStep !== SignupStep.ATMOSPHERE
+  next.hasPrev = next.activeStep !== SignupStep.INFO
 
   logger.debug('signup', next)
 
