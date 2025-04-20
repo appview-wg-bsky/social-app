@@ -8,6 +8,7 @@ import {Provider as DisableHapticsProvider} from './disable-haptics'
 import {Provider as ExternalEmbedsProvider} from './external-embeds-prefs'
 import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
+import {Provider as FollowNotificationsProvider} from './hide-follow-notifications'
 import {Provider as InAppBrowserProvider} from './in-app-browser'
 import {Provider as KawaiiProvider} from './kawaii'
 import {Provider as LanguagesProvider} from './languages'
@@ -41,33 +42,35 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
       <AltTextRequiredProvider>
         <GoLinksProvider>
           <NoAppLabelersProvider>
-            <DirectFetchRecordsProvider>
-              <ConstellationProvider>
-                <NoDiscoverProvider>
-                  <LargeAltBadgeProvider>
-                    <ExternalEmbedsProvider>
-                      <HiddenPostsProvider>
-                        <InAppBrowserProvider>
-                          <DisableHapticsProvider>
-                            <AutoplayProvider>
-                              <UsedStarterPacksProvider>
-                                <SubtitlesProvider>
-                                  <TrendingSettingsProvider>
-                                    <RepostCarouselProvider>
+            <FollowNotificationsProvider>
+              <DirectFetchRecordsProvider>
+                <ConstellationProvider>
+                  <NoDiscoverProvider>
+                    <LargeAltBadgeProvider>
+                      <ExternalEmbedsProvider>
+                        <HiddenPostsProvider>
+                          <InAppBrowserProvider>
+                            <DisableHapticsProvider>
+                              <AutoplayProvider>
+                                <UsedStarterPacksProvider>
+                                  <SubtitlesProvider>
+                                    <TrendingSettingsProvider>
+                                      <RepostCarouselProvider>
                                         <KawaiiProvider>{children}</KawaiiProvider>
-                                    </RepostCarouselProvider>
-                                </TrendingSettingsProvider>
-                                </SubtitlesProvider>
-                              </UsedStarterPacksProvider>
-                            </AutoplayProvider>
-                          </DisableHapticsProvider>
-                        </InAppBrowserProvider>
-                      </HiddenPostsProvider>
-                    </ExternalEmbedsProvider>
-                  </LargeAltBadgeProvider>
-                </NoDiscoverProvider>
-              </ConstellationProvider>
-            </DirectFetchRecordsProvider>
+                                      </RepostCarouselProvider>
+                                    </TrendingSettingsProvider>
+                                  </SubtitlesProvider>
+                                </UsedStarterPacksProvider>
+                              </AutoplayProvider>
+                            </DisableHapticsProvider>
+                          </InAppBrowserProvider>
+                        </HiddenPostsProvider>
+                      </ExternalEmbedsProvider>
+                    </LargeAltBadgeProvider>
+                  </NoDiscoverProvider>
+                </ConstellationProvider>
+              </DirectFetchRecordsProvider>
+            </FollowNotificationsProvider>
           </NoAppLabelersProvider>
         </GoLinksProvider>
       </AltTextRequiredProvider>

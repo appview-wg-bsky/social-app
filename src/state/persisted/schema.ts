@@ -131,6 +131,7 @@ const schema = z.object({
   noAppLabelers: z.boolean().optional(),
   noDiscoverFallback: z.boolean().optional(),
   repostCarouselEnabled: z.boolean().optional(),
+  hideFollowNotifications: z.boolean().optional(),
 
   /** @deprecated */
   mutedThreads: z.array(z.string()),
@@ -191,6 +192,7 @@ export const defaults: Schema = {
   noAppLabelers: false,
   noDiscoverFallback: false,
   repostCarouselEnabled: false,
+  hideFollowNotifications: false,
 }
 
 export function tryParse(rawData: string): Schema | undefined {

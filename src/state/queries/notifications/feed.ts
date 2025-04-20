@@ -32,6 +32,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import {useHideFollowNotifications} from '#/state/preferences/hide-follow-notifications'
 import {useAgent} from '#/state/session'
 import {useThreadgateHiddenReplyUris} from '#/state/threadgate-hidden-replies'
 import {useModerationOpts} from '../../preferences/moderation-opts'
@@ -63,6 +64,7 @@ export function useNotificationFeedQuery(opts: {
   const agent = useAgent()
   const queryClient = useQueryClient()
   const moderationOpts = useModerationOpts()
+  const hideFollowNotifications = useHideFollowNotifications()
   const unreads = useUnreadNotificationsApi()
   const enabled = opts.enabled !== false
   const filter = opts.filter
@@ -111,6 +113,7 @@ export function useNotificationFeedQuery(opts: {
           cursor: pageParam,
           queryClient,
           moderationOpts,
+          hideFollowNotifications,
           fetchAdditionalData: true,
           reasons,
         })
