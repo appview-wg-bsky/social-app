@@ -16,6 +16,11 @@ import {isWeb} from '#/platform/detection'
 import {type Shadow} from '#/state/cache/types'
 import {useModalControls} from '#/state/modals'
 import {
+  useDeerVerificationEnabled,
+  useDeerVerificationTrusted,
+  useSetDeerVerificationTrust,
+} from '#/state/preferences/deer-verification'
+import {
   RQKEY as profileQueryKey,
   useProfileBlockMutationQueue,
   useProfileFollowMutationQueue,
@@ -77,6 +82,10 @@ let ProfileMenu = ({
   const [devModeEnabled] = useDevMode()
   const verification = useFullVerificationState({profile})
   const canGoLive = useCanGoLive(currentAccount?.did)
+
+  const deerVerificationEnabled = useDeerVerificationEnabled()
+  const deerVerificationTrusted = useDeerVerificationTrusted().has(profile.did)
+  const setDeerVerificationTrust = useSetDeerVerificationTrust()
 
   const [queueMute, queueUnmute] = useProfileMuteMutationQueue(profile)
   const [queueBlock, queueUnblock] = useProfileBlockMutationQueue(profile)
@@ -328,6 +337,31 @@ let ProfileMenu = ({
                     <Menu.ItemIcon icon={LiveIcon} />
                   </Menu.Item>
                 )}
+                {!isSelf &&
+                  deerVerificationEnabled &&
+                  (deerVerificationTrusted ? (
+                    <Menu.Item
+                      testID="profileHeaderDropdownVerificationTrustRemoveButton"
+                      label={_(msg`Remove trust`)}
+                      onPress={() =>
+                        setDeerVerificationTrust.remove(profile.did)
+                      }>
+                      <Menu.ItemText>
+                        <Trans>Remove trust</Trans>
+                      </Menu.ItemText>
+                      <Menu.ItemIcon icon={CircleX} />
+                    </Menu.Item>
+                  ) : (
+                    <Menu.Item
+                      testID="profileHeaderDropdownVerificationTrustAddButton"
+                      label={_(msg`Trust verifier`)}
+                      onPress={() => setDeerVerificationTrust.add(profile.did)}>
+                      <Menu.ItemText>
+                        <Trans>Trust verifier</Trans>
+                      </Menu.ItemText>
+                      <Menu.ItemIcon icon={CircleCheck} />
+                    </Menu.Item>
+                  ))}
                 {verification.viewer.role === 'verifier' &&
                   !verification.profile.isViewer &&
                   (verification.viewer.hasIssuedVerification ? (

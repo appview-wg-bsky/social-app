@@ -23,6 +23,7 @@ import {findAllProfilesInQueryData as findAllProfilesInSuggestedFollowsQueryData
 import {findAllProfilesInQueryData as findAllProfilesInSuggestedUsersQueryData} from '#/state/queries/trending/useGetSuggestedUsersQuery'
 import {findAllProfilesInQueryData as findAllProfilesInPostThreadV2QueryData} from '#/state/queries/usePostThread/queryCache'
 import type * as bsky from '#/types/bsky'
+import {useDeerVerificationProfileOverlay} from '../queries/deer-verification'
 import {castAsShadow, type Shadow} from './types'
 
 export type {Shadow} from './types'
@@ -61,13 +62,14 @@ export function useProfileShadow<
     }
   }, [profile])
 
-  return useMemo(() => {
+  const shadowed = useMemo(() => {
     if (shadow) {
       return mergeShadow(profile, shadow)
     } else {
       return castAsShadow(profile)
     }
   }, [profile, shadow])
+  return useDeerVerificationProfileOverlay(shadowed)
 }
 
 /**

@@ -1,0 +1,244 @@
+import {AppBskyGraphVerification, AtUri} from '@atproto/api'
+import {
+  type VerificationState,
+  type VerificationView,
+} from '@atproto/api/dist/client/types/app/bsky/actor/defs'
+import {useQuery} from '@tanstack/react-query'
+
+import {STALE} from '#/state/queries'
+import * as bsky from '#/types/bsky'
+import {type AnyProfileView} from '#/types/bsky/profile'
+import {useConstellationInstance} from '../preferences/constellation-instance'
+import {
+  useDeerVerificationEnabled,
+  useDeerVerificationTrusted,
+} from '../preferences/deer-verification'
+import {
+  asUri,
+  asyncGenCollect,
+  asyncGenDedupe,
+  asyncGenFilter,
+  asyncGenTake,
+  asyncGenTryMap,
+  type ConstellationLink,
+  constellationLinks,
+} from './constellation'
+import {LRU} from './direct-fetch-record'
+import {useCurrentAccountProfile} from './useCurrentAccountProfile'
+
+const RQKEY_ROOT = 'deer-verification'
+export const RQKEY = (did: string, trusted: Set<string>) => [
+  RQKEY_ROOT,
+  did,
+  Array.from(trusted).sort(),
+]
+
+type LinkedRecord = {
+  link: ConstellationLink
+  record: AppBskyGraphVerification.Record
+}
+
+// TODO: lift this into direct fetch to share cache
+const serviceCache = new LRU<`did:${string}`, string>()
+
+const verificationCache = new LRU<string, any>()
+
+export function getTrustedConstellationVerifications(
+  instance: string,
+  did: string,
+  trusted: Set<string>,
+) {
+  const urip = new AtUri(did)
+  const verificationLinks = asyncGenTake(
+    constellationLinks(instance, {
+      target: urip.host,
+      collection: 'app.bsky.graph.verification',
+      path: '.subject',
+      // TODO: remove this when constellation supports filtering
+      // without a max here, a malicious user could create thousands of verification records and hang a client
+      // since we can't filter to only trusted verifiers before searching for backlinks yet
+    }),
+    100,
+  )
+  return asyncGenDedupe(
+    asyncGenFilter(verificationLinks, ({did}) => trusted.has(did)),
+    ({did}) => did,
+  )
+}
+
+async function getDeerVerificationLinkedRecords(
+  instance: string,
+  did: string,
+  trusted: Set<string>,
+): Promise<LinkedRecord[] | undefined> {
+  try {
+    const trustedVerificationLinks = getTrustedConstellationVerifications(
+      instance,
+      did,
+      trusted,
+    )
+
+    const verificationRecords = asyncGenFilter(
+      asyncGenTryMap<ConstellationLink, {link: ConstellationLink; record: any}>(
+        trustedVerificationLinks,
+        // using try map lets us:
+        // - cache the service url and verificatin record in independent lrus
+        // - clear the promise from the lru on failure
+        // - skip links that cause errors
+        async link => {
+          const {did, rkey} = link
+
+          let service = await serviceCache.getOrTryInsertWith(did, async () => {
+            const docUrl = did.startsWith('did:plc:')
+              ? `https://plc.directory/${did}`
+              : `https://${did.substring(8)}/.well-known/did.json`
+
+            // TODO: validate!
+            const doc: {
+              service: {
+                serviceEndpoint: string
+                type: string
+              }[]
+            } = await (await fetch(docUrl)).json()
+            const service = doc.service.find(
+              s => s.type === 'AtprotoPersonalDataServer',
+            )?.serviceEndpoint
+
+            if (service === undefined)
+              throw new Error(`could not find a service for ${did}`)
+            return service
+          })
+
+          const request = `${service}/xrpc/com.atproto.repo.getRecord?repo=${did}&collection=app.bsky.graph.verification&rkey=${rkey}`
+          const record = await verificationCache.getOrTryInsertWith(
+            request,
+            async () => {
+              const resp = await (await fetch(request)).json()
+              return resp.value
+            },
+          )
+          return {link, record}
+        },
+        (_, e) => {
+          console.error(e)
+        },
+      ),
+      // the explicit return type shouldn't be needed...
+      (d: {link: ConstellationLink; record: unknown}): d is LinkedRecord =>
+        bsky.validate<AppBskyGraphVerification.Record>(
+          d.record,
+          AppBskyGraphVerification.validateRecord,
+        ),
+    )
+
+    // Array.fromAsync will do this but not available everywhere yet
+    return asyncGenCollect(verificationRecords)
+  } catch (e) {
+    console.error(e)
+    return undefined
+  }
+}
+
+function createVerificationViews(
+  linkedRecords: LinkedRecord[],
+  profile: AnyProfileView,
+): VerificationView[] {
+  return linkedRecords.map(({link, record}) => ({
+    issuer: link.did,
+    isValid:
+      (profile.displayName ?? '') === record.displayName &&
+      profile.handle === record.handle,
+    createdAt: record.createdAt,
+    uri: asUri(link),
+  }))
+}
+
+function createVerificationState(
+  verifications: VerificationView[],
+  profile: AnyProfileView,
+  trusted: Set<string>,
+): VerificationState {
+  return {
+    verifications,
+    verifiedStatus:
+      verifications.length > 0
+        ? verifications.findIndex(v => v.isValid) !== -1
+          ? 'valid'
+          : 'invalid'
+        : 'none',
+    trustedVerifierStatus: trusted.has(profile.did) ? 'valid' : 'none',
+  }
+}
+
+export function useDeerVerificationState({
+  profile,
+  enabled,
+}: {
+  profile: AnyProfileView | undefined
+  enabled?: boolean
+}) {
+  const instance = useConstellationInstance()
+  const currentAccountProfile = useCurrentAccountProfile()
+  const trusted = useDeerVerificationTrusted(currentAccountProfile?.did)
+
+  const linkedRecords = useQuery<LinkedRecord[] | undefined>({
+    staleTime: STALE.HOURS.ONE,
+    queryKey: RQKEY(profile?.did || '', trusted),
+    async queryFn() {
+      if (!profile) return undefined
+
+      return await getDeerVerificationLinkedRecords(
+        instance,
+        profile.did,
+        trusted,
+      )
+    },
+    enabled: enabled && profile !== undefined,
+  })
+
+  if (linkedRecords.data === undefined || profile === undefined) return
+  const verifications = createVerificationViews(linkedRecords.data, profile)
+  const verificationState = createVerificationState(
+    verifications,
+    profile,
+    trusted,
+  )
+
+  return verificationState
+}
+
+export function useDeerVerificationProfileOverlay<V extends AnyProfileView>(
+  profile: V,
+): V {
+  const enabled = useDeerVerificationEnabled()
+  const verificationState = useDeerVerificationState({
+    profile,
+    enabled,
+  })
+
+  return enabled
+    ? {
+        ...profile,
+        verification: verificationState,
+      }
+    : profile
+}
+
+export function useMaybeDeerVerificationProfileOverlay<
+  V extends AnyProfileView,
+>(profile: V | undefined): V | undefined {
+  const enabled = useDeerVerificationEnabled()
+  const verificationState = useDeerVerificationState({
+    profile,
+    enabled,
+  })
+
+  if (!profile) return undefined
+
+  return enabled
+    ? {
+        ...profile,
+        verification: verificationState,
+      }
+    : profile
+}
