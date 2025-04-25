@@ -14,11 +14,21 @@ import {
 } from '#/lib/statsig/statsig'
 import {isWeb} from '#/platform/detection'
 import {setGeolocation, useGeolocation} from '#/state/geolocation'
+import * as persisted from '#/state/persisted'
 import {useGoLinksEnabled, useSetGoLinksEnabled} from '#/state/preferences'
 import {
   useConstellationEnabled,
   useSetConstellationEnabled,
 } from '#/state/preferences/constellation-enabled'
+import {
+  useConstellationInstance,
+  useSetConstellationInstance,
+} from '#/state/preferences/constellation-instance'
+import {
+  useDeerVerificationEnabled,
+  useDeerVerificationTrusted,
+  useSetDeerVerificationEnabled,
+} from '#/state/preferences/deer-verification'
 import {
   useDirectFetchRecords,
   useSetDirectFetchRecords,
@@ -27,6 +37,7 @@ import {
   useHideFollowNotifications,
   useSetHideFollowNotifications,
 } from '#/state/preferences/hide-follow-notifications'
+import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {
   useNoAppLabelers,
   useSetNoAppLabelers,
@@ -39,7 +50,9 @@ import {
   useRepostCarouselEnabled,
   useSetRepostCarouselEnabled,
 } from '#/state/preferences/repost-carousel-enabled'
+import {useProfilesQuery} from '#/state/queries/profile'
 import {TextInput} from '#/view/com/modals/util'
+import {List} from '#/view/com/util/List'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
 import {Admonition} from '#/components/Admonition'
@@ -53,8 +66,11 @@ import {Earth_Stroke2_Corner2_Rounded as GlobeIcon} from '#/components/icons/Glo
 import {Lab_Stroke2_Corner0_Rounded as BeakerIcon} from '#/components/icons/Lab'
 import {PaintRoller_Stroke2_Corner2_Rounded as PaintRollerIcon} from '#/components/icons/PaintRoller'
 import {RaisingHand4Finger_Stroke2_Corner0_Rounded as RaisingHandIcon} from '#/components/icons/RaisingHand'
+import {Star_Stroke2_Corner0_Rounded as StarIcon} from '#/components/icons/Star'
+import {Verified_Stroke2_Corner2_Rounded as VerifiedIcon} from '#/components/icons/Verified'
 import * as Layout from '#/components/Layout'
 import {Text} from '#/components/Typography'
+import {SearchProfileCard} from '../Search/components/SearchProfileCard'
 
 type Props = NativeStackScreenProps<CommonNavigatorParams>
 
@@ -123,6 +139,94 @@ function GeolocationSettingsDialog({
   )
 }
 
+function ConstellationInstanceDialog({
+  control,
+}: {
+  control: Dialog.DialogControlProps
+}) {
+  const pal = usePalette('default')
+  const {_} = useLingui()
+
+  const [url, setUrl] = useState('')
+  const setConstellationInstance = useSetConstellationInstance()
+
+  const submit = () => {
+    setConstellationInstance(url)
+    control.close()
+    // need to clear since we don't set value of input and component may be reused
+    setUrl('')
+  }
+
+  return (
+    <Dialog.Outer control={control} nativeOptions={{preventExpansion: true}}>
+      <Dialog.Handle />
+      <Dialog.ScrollableInner label={_(msg`Constellations instance URL`)}>
+        <View style={[a.gap_sm, a.pb_lg]}>
+          <Text style={[a.text_2xl, a.font_bold]}>
+            <Trans>Constellations instance URL</Trans>
+          </Text>
+        </View>
+
+        <View style={a.gap_lg}>
+          <TextInput
+            accessibilityLabel="Text input field"
+            autoFocus
+            style={[styles.textInput, pal.border, pal.text]}
+            onChangeText={value => {
+              setUrl(value)
+            }}
+            placeholder={persisted.defaults.constellationInstance}
+            placeholderTextColor={pal.colors.textLight}
+            onSubmitEditing={submit}
+            accessibilityHint={_(
+              msg`Input the url of the constellations instance to use`,
+            )}
+          />
+
+          <View style={isWeb && [a.flex_row, a.justify_end]}>
+            <Button
+              label={_(msg`Save`)}
+              size="large"
+              onPress={submit}
+              variant="solid"
+              color="primary"
+              disabled={!URL.canParse(url)}>
+              <ButtonText>
+                <Trans>Save</Trans>
+              </ButtonText>
+            </Button>
+          </View>
+        </View>
+
+        <Dialog.Close />
+      </Dialog.ScrollableInner>
+    </Dialog.Outer>
+  )
+}
+
+const TrustedVerifiers = (): React.ReactNode => {
+  const trusted = useDeerVerificationTrusted()
+  const moderationOpts = useModerationOpts()
+
+  const results = useProfilesQuery({
+    handles: Array.from(trusted),
+  })
+
+  return (
+    results.data &&
+    moderationOpts !== undefined && (
+      <List
+        data={results.data.profiles}
+        renderItem={({item}) => (
+          <SearchProfileCard profile={item} moderationOpts={moderationOpts} />
+        )}
+        keyExtractor={item => item.did}
+        contentContainerStyle={[a.pl_xl, a.pb_sm]}
+      />
+    )
+  )
+}
+
 export function DeerSettingsScreen({}: Props) {
   const {_} = useLingui()
 
@@ -146,6 +250,12 @@ export function DeerSettingsScreen({}: Props) {
 
   const location = useGeolocation()
   const setLocationControl = Dialog.useDialogControl()
+
+  const constellationInstance = useConstellationInstance()
+  const setConstellationInstanceControl = Dialog.useDialogControl()
+
+  const deerVerificationEnabled = useDeerVerificationEnabled()
+  const setDeerVerificationEnabled = useSetDeerVerificationEnabled()
 
   const repostCarouselEnabled = useRepostCarouselEnabled()
   const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
@@ -229,6 +339,64 @@ export function DeerSettingsScreen({}: Props) {
               <Toggle.Platform />
             </Toggle.Item>
           </SettingsList.Group>
+
+          <SettingsList.Group contentContainerStyle={[a.gap_sm]}>
+            <SettingsList.ItemIcon icon={VerifiedIcon} />
+            <SettingsList.ItemText>
+              <Trans>Verification</Trans>
+            </SettingsList.ItemText>
+            <Toggle.Item
+              name="custom_verifications"
+              label={_(
+                msg`Select your own set of trusted verifiers, and operate as a verifier`,
+              )}
+              value={deerVerificationEnabled}
+              onChange={value => setDeerVerificationEnabled(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>
+                  Select your own set of trusted verifiers, and operate as a
+                  verifier
+                </Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
+          </SettingsList.Group>
+
+          <SettingsList.Item>
+            <Admonition type="warning" style={[a.flex_1]}>
+              <Trans>
+                WIP. May slow down the client or fail to find all labels. Revoke
+                and grant trust in the meatball menu on a profile.{' '}
+                {deerVerificationEnabled
+                  ? 'You currently'
+                  : 'If enabled, you would'}{' '}
+                trust the following verifiers:
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
+
+          <TrustedVerifiers />
+
+          <SettingsList.Item>
+            <SettingsList.ItemIcon icon={StarIcon} />
+            <SettingsList.ItemText>
+              <Trans>{`Constellation Instance`}</Trans>
+            </SettingsList.ItemText>
+            <SettingsList.BadgeButton
+              label={_(msg`Change`)}
+              onPress={() => setConstellationInstanceControl.open()}
+            />
+          </SettingsList.Item>
+          <SettingsList.Item>
+            <Admonition type="info" style={[a.flex_1]}>
+              <Trans>
+                Constellation is used to supplement AppView responses for custom
+                verifications and nuclear block bypass, via backlinks. Current
+                instance: {constellationInstance}
+              </Trans>
+            </Admonition>
+          </SettingsList.Item>
 
           <SettingsList.Item>
             <SettingsList.ItemIcon icon={GlobeIcon} />
@@ -377,6 +545,7 @@ export function DeerSettingsScreen({}: Props) {
         </SettingsList.Container>
       </Layout.Content>
       <GeolocationSettingsDialog control={setLocationControl} />
+      <ConstellationInstanceDialog control={setConstellationInstanceControl} />
     </Layout.Screen>
   )
 }

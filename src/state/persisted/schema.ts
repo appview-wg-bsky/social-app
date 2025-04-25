@@ -132,6 +132,13 @@ const schema = z.object({
   noDiscoverFallback: z.boolean().optional(),
   repostCarouselEnabled: z.boolean().optional(),
   hideFollowNotifications: z.boolean().optional(),
+  constellationInstance: z.string().optional(),
+  deerVerification: z
+    .object({
+      enabled: z.boolean(),
+      trusted: z.array(z.string()),
+    })
+    .optional(),
 
   /** @deprecated */
   mutedThreads: z.array(z.string()),
@@ -193,6 +200,17 @@ export const defaults: Schema = {
   noDiscoverFallback: false,
   repostCarouselEnabled: false,
   hideFollowNotifications: false,
+  constellationInstance: 'https://constellation.microcosm.blue/',
+  deerVerification: {
+    enabled: false,
+    // https://deer.social/profile/did:plc:p2cp5gopk7mgjegy6wadk3ep/post/3lndyqyyr4k2k
+    trusted: [
+      'did:plc:z72i7hdynmk6r22z27h6tvur',
+      'did:plc:eclio37ymobqex2ncko63h4r',
+      'did:plc:inz4fkbbp7ms3ixufw6xuvdi',
+      'did:plc:b2kutgxqlltwc6lhs724cfwr',
+    ],
+  },
 }
 
 export function tryParse(rawData: string): Schema | undefined {
