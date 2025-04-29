@@ -1,5 +1,7 @@
 const pkg = require('./package.json')
 
+const DARK_SPLASH_ANDROID_BACKGROUND = '#0e1610'
+
 module.exports = function (_config) {
   /**
    * App version number. Should be incremented as part of a release cycle.
@@ -18,20 +20,17 @@ module.exports = function (_config) {
   const IS_DEV = !IS_TESTFLIGHT || !IS_PRODUCTION
 
   const ASSOCIATED_DOMAINS = [
-    'applinks:bsky.app',
-    'applinks:staging.bsky.app',
-    'appclips:bsky.app',
-    'appclips:go.bsky.app', // Allows App Clip to work when scanning QR codes
+    'applinks:deer.social',
     // When testing local services, enter an ngrok (et al) domain here. It must use a standard HTTP/HTTPS port.
     ...(IS_DEV || IS_TESTFLIGHT ? [] : []),
   ]
 
-  const UPDATES_CHANNEL = IS_TESTFLIGHT
-    ? 'testflight'
-    : IS_PRODUCTION
-    ? 'production'
-    : undefined
-  const UPDATES_ENABLED = !!UPDATES_CHANNEL
+  // const UPDATES_CHANNEL = IS_TESTFLIGHT
+  //   ? 'testflight'
+  //   : IS_PRODUCTION
+  //   ? 'production'
+  //   : undefined
+  // const UPDATES_ENABLED = !!UPDATES_CHANNEL
 
   const USE_SENTRY = Boolean(process.env.SENTRY_AUTH_TOKEN)
 
@@ -42,16 +41,16 @@ module.exports = function (_config) {
       slug: 'deer',
       scheme: ['bluesky', 'deer'],
       // owner: 'blueskysocial',
-      owner: 'neema.brown',
+      // owner: 'neema.brown',
       runtimeVersion: {
         policy: 'appVersion',
       },
       icon: './assets/app-icons/ios_icon_default_light.png',
       userInterfaceStyle: 'automatic',
-      primaryColor: '#1083fe',
+      primaryColor: '#4b9b6c',
       ios: {
         supportsTablet: false,
-        bundleIdentifier: 'com.deersocial',
+        bundleIdentifier: 'social.deer',
         config: {
           usesNonExemptEncryption: false,
         },
@@ -65,7 +64,7 @@ module.exports = function (_config) {
             'Used to save images to your library.',
           NSPhotoLibraryUsageDescription:
             'Used for profile pictures, posts, and other kinds of content',
-          CFBundleSpokenName: 'Deer Social',
+          CFBundleSpokenName: 'deer.social',
           CFBundleLocalizations: [
             'en',
             'an',
@@ -113,7 +112,7 @@ module.exports = function (_config) {
         entitlements: {
           'com.apple.developer.kernel.increased-memory-limit': true,
           'com.apple.developer.kernel.extended-virtual-addressing': true,
-          'com.apple.security.application-groups': 'group.app.bsky',
+          'com.apple.security.application-groups': 'group.social.deer',
         },
         privacyManifests: {
           NSPrivacyAccessedAPITypes: [
@@ -152,10 +151,10 @@ module.exports = function (_config) {
           foregroundImage: './assets/icon-android-foreground.png',
           monochromeImage: './assets/icon-android-foreground.png',
           backgroundImage: './assets/icon-android-background.png',
-          backgroundColor: '#1185FE',
+          backgroundColor: '#4b9b6c',
         },
         googleServicesFile: './google-services.json',
-        package: 'com.deersocial',
+        package: 'social.deer',
         intentFilters: [
           {
             action: 'VIEW',
@@ -163,7 +162,7 @@ module.exports = function (_config) {
             data: [
               {
                 scheme: 'https',
-                host: 'bsky.app',
+                host: 'deer.social',
               },
               IS_DEV && {
                 scheme: 'http',
@@ -177,22 +176,22 @@ module.exports = function (_config) {
       web: {
         favicon: './assets/favicon.png',
       },
-      updates: {
-        url: 'https://updates.bsky.app/manifest',
-        enabled: UPDATES_ENABLED,
-        fallbackToCacheTimeout: 30000,
-        codeSigningCertificate: UPDATES_ENABLED
-          ? './code-signing/certificate.pem'
-          : undefined,
-        codeSigningMetadata: UPDATES_ENABLED
-          ? {
-              keyid: 'main',
-              alg: 'rsa-v1_5-sha256',
-            }
-          : undefined,
-        checkAutomatically: 'NEVER',
-        channel: UPDATES_CHANNEL,
-      },
+      // updates: {
+      //   url: 'https://updates.bsky.app/manifest',
+      //   enabled: UPDATES_ENABLED,
+      //   fallbackToCacheTimeout: 30000,
+      //   codeSigningCertificate: UPDATES_ENABLED
+      //     ? './code-signing/certificate.pem'
+      //     : undefined,
+      //   codeSigningMetadata: UPDATES_ENABLED
+      //     ? {
+      //         keyid: 'main',
+      //         alg: 'rsa-v1_5-sha256',
+      //       }
+      //     : undefined,
+      //   checkAutomatically: 'NEVER',
+      //   channel: UPDATES_CHANNEL,
+      // },
       plugins: [
         'expo-video',
         'expo-localization',
@@ -228,7 +227,7 @@ module.exports = function (_config) {
           'expo-notifications',
           {
             icon: './assets/icon-android-notification.png',
-            color: '#1185fe',
+            color: '#4b9b6c',
             sounds: PLATFORM === 'ios' ? ['assets/dm.aiff'] : ['assets/dm.mp3'],
           },
         ],
@@ -274,17 +273,17 @@ module.exports = function (_config) {
               resizeMode: 'cover',
               dark: {
                 enableFullScreenImage_legacy: true,
-                backgroundColor: '#001429',
+                backgroundColor: '#03180c',
                 image: './assets/splash-dark.png',
                 resizeMode: 'cover',
               },
             },
             android: {
-              backgroundColor: '#0c7cff',
+              backgroundColor: '#4b9b6c',
               image: './assets/splash-android-icon.png',
               imageWidth: 150,
               dark: {
-                backgroundColor: '#0c2a49',
+                backgroundColor: '#01331a',
                 image: './assets/splash-android-icon-dark.png',
                 imageWidth: 150,
               },
@@ -311,51 +310,51 @@ module.exports = function (_config) {
             /**
              * Bluesky+ core set
              */
-            core_aurora: {
-              ios: './assets/app-icons/ios_icon_core_aurora.png',
-              android: './assets/app-icons/android_icon_core_aurora.png',
-              prerendered: true,
-            },
-            core_bonfire: {
-              ios: './assets/app-icons/ios_icon_core_bonfire.png',
-              android: './assets/app-icons/android_icon_core_bonfire.png',
-              prerendered: true,
-            },
-            core_sunrise: {
-              ios: './assets/app-icons/ios_icon_core_sunrise.png',
-              android: './assets/app-icons/android_icon_core_sunrise.png',
-              prerendered: true,
-            },
-            core_sunset: {
-              ios: './assets/app-icons/ios_icon_core_sunset.png',
-              android: './assets/app-icons/android_icon_core_sunset.png',
-              prerendered: true,
-            },
-            core_midnight: {
-              ios: './assets/app-icons/ios_icon_core_midnight.png',
-              android: './assets/app-icons/android_icon_core_midnight.png',
-              prerendered: true,
-            },
-            core_flat_blue: {
-              ios: './assets/app-icons/ios_icon_core_flat_blue.png',
-              android: './assets/app-icons/android_icon_core_flat_blue.png',
-              prerendered: true,
-            },
-            core_flat_white: {
-              ios: './assets/app-icons/ios_icon_core_flat_white.png',
-              android: './assets/app-icons/android_icon_core_flat_white.png',
-              prerendered: true,
-            },
-            core_flat_black: {
-              ios: './assets/app-icons/ios_icon_core_flat_black.png',
-              android: './assets/app-icons/android_icon_core_flat_black.png',
-              prerendered: true,
-            },
-            core_classic: {
-              ios: './assets/app-icons/ios_icon_core_classic.png',
-              android: './assets/app-icons/android_icon_core_classic.png',
-              prerendered: true,
-            },
+            // core_aurora: {
+            //   ios: './assets/app-icons/ios_icon_core_aurora.png',
+            //   android: './assets/app-icons/android_icon_core_aurora.png',
+            //   prerendered: true,
+            // },
+            // core_bonfire: {
+            //   ios: './assets/app-icons/ios_icon_core_bonfire.png',
+            //   android: './assets/app-icons/android_icon_core_bonfire.png',
+            //   prerendered: true,
+            // },
+            // core_sunrise: {
+            //   ios: './assets/app-icons/ios_icon_core_sunrise.png',
+            //   android: './assets/app-icons/android_icon_core_sunrise.png',
+            //   prerendered: true,
+            // },
+            // core_sunset: {
+            //   ios: './assets/app-icons/ios_icon_core_sunset.png',
+            //   android: './assets/app-icons/android_icon_core_sunset.png',
+            //   prerendered: true,
+            // },
+            // core_midnight: {
+            //   ios: './assets/app-icons/ios_icon_core_midnight.png',
+            //   android: './assets/app-icons/android_icon_core_midnight.png',
+            //   prerendered: true,
+            // },
+            // core_flat_blue: {
+            //   ios: './assets/app-icons/ios_icon_core_flat_blue.png',
+            //   android: './assets/app-icons/android_icon_core_flat_blue.png',
+            //   prerendered: true,
+            // },
+            // core_flat_white: {
+            //   ios: './assets/app-icons/ios_icon_core_flat_white.png',
+            //   android: './assets/app-icons/android_icon_core_flat_white.png',
+            //   prerendered: true,
+            // },
+            // core_flat_black: {
+            //   ios: './assets/app-icons/ios_icon_core_flat_black.png',
+            //   android: './assets/app-icons/android_icon_core_flat_black.png',
+            //   prerendered: true,
+            // },
+            // core_classic: {
+            //   ios: './assets/app-icons/ios_icon_core_classic.png',
+            //   android: './assets/app-icons/android_icon_core_classic.png',
+            //   prerendered: true,
+            // },
           },
         ],
         ['expo-screen-orientation', {initialOrientation: 'PORTRAIT_UP'}],
@@ -365,35 +364,35 @@ module.exports = function (_config) {
           build: {
             experimental: {
               ios: {
-                appExtensions: [
-                  {
-                    targetName: 'Share-with-Bluesky',
-                    bundleIdentifier: 'xyz.blueskyweb.app.Share-with-Bluesky',
-                    entitlements: {
-                      'com.apple.security.application-groups': [
-                        'group.app.bsky',
-                      ],
-                    },
-                  },
-                  {
-                    targetName: 'BlueskyNSE',
-                    bundleIdentifier: 'xyz.blueskyweb.app.BlueskyNSE',
-                    entitlements: {
-                      'com.apple.security.application-groups': [
-                        'group.app.bsky',
-                      ],
-                    },
-                  },
-                  {
-                    targetName: 'BlueskyClip',
-                    bundleIdentifier: 'xyz.blueskyweb.app.AppClip',
-                  },
-                ],
+                // appExtensions: [
+                //   {
+                //     targetName: 'Share-with-Bluesky',
+                //     bundleIdentifier: 'xyz.blueskyweb.app.Share-with-Bluesky',
+                //     entitlements: {
+                //       'com.apple.security.application-groups': [
+                //         'group.app.bsky',
+                //       ],
+                //     },
+                //   },
+                //   {
+                //     targetName: 'BlueskyNSE',
+                //     bundleIdentifier: 'xyz.blueskyweb.app.BlueskyNSE',
+                //     entitlements: {
+                //       'com.apple.security.application-groups': [
+                //         'group.app.bsky',
+                //       ],
+                //     },
+                //   },
+                //   {
+                //     targetName: 'BlueskyClip',
+                //     bundleIdentifier: 'xyz.blueskyweb.app.AppClip',
+                //   },
+                // ],
               },
             },
           },
           //projectId: '55bd077a-d905-4184-9c7f-94789ba0f302',
-          projectId: '7fdb5d99-3996-4a6c-bdf5-b4c1698aa7e6',
+          projectId: '86ff94e3-dce0-4f7c-99f4-1651a2f1bc2a',
         },
       },
     },
