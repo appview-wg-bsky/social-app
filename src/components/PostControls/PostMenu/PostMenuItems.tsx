@@ -51,6 +51,7 @@ import {
   useProfileBlockMutationQueue,
   useProfileMuteMutationQueue,
 } from '#/state/queries/profile'
+import {resolvePdsServiceUrl} from '#/state/queries/resolve-identity'
 import {useToggleReplyVisibilityMutation} from '#/state/queries/threadgate'
 import {useRequireAuth, useSession} from '#/state/session'
 import {useMergedThreadgateHiddenReplies} from '#/state/threadgate-hidden-replies'
@@ -366,7 +367,9 @@ let PostMenuItems = ({
     const video = post.embed as AppBskyEmbedVideo.View
     const did = post.author.did
     const cid = video.cid
-    const uri = `https://bsky.social/xrpc/com.atproto.sync.getBlob?did=${did}&cid=${cid}`
+    if (!did.startsWith('did:')) return
+    const pdsUrl = await resolvePdsServiceUrl(did as `did:${string}`)
+    const uri = `${pdsUrl}/xrpc/com.atproto.sync.getBlob?did=${did}&cid=${cid}`
 
     Toast.show('Downloading video...', 'download')
 
