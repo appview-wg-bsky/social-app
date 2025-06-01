@@ -11,7 +11,7 @@
 <defs>
 <linearGradient id="paint0_linear_4559_208" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
 <stop stop-color="#FCC58F"/>
-<stop offset="1" stop-color="#FFD170"/>
+<stop offset="1" stop-color="#FFCD70"/>
 </linearGradient>
 <clipPath id="clip0_4559_208">
 <rect width="512" height="512" fill="white"/>
