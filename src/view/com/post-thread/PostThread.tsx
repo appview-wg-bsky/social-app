@@ -3,11 +3,7 @@ import {StyleSheet, useWindowDimensions, View} from 'react-native'
 import {runOnJS} from 'react-native-reanimated'
 import Animated from 'react-native-reanimated'
 import {useSafeAreaInsets} from 'react-native-safe-area-context'
-import {
-  AppBskyFeedDefs,
-  type AppBskyFeedThreadgate,
-  moderatePost,
-} from '@atproto/api'
+import {AppBskyFeedDefs, type AppBskyFeedThreadgate} from '@atproto/api'
 import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 
@@ -166,19 +162,25 @@ export function PostThread({uri}: {uri: string | undefined}) {
   })
 
   const moderationOpts = useModerationOpts()
-  const isNoPwi = React.useMemo(() => {
-    const mod =
-      rootPost && moderationOpts
-        ? moderatePost(rootPost, moderationOpts)
-        : undefined
-    return !!mod
-      ?.ui('contentList')
-      .blurs.find(
-        cause =>
-          cause.type === 'label' &&
-          cause.labelDef.identifier === '!no-unauthenticated',
-      )
-  }, [rootPost, moderationOpts])
+  const isNoPwi = React.useMemo(
+    () => {
+      // const mod =
+      //   rootPost && moderationOpts
+      //     ? moderatePost(rootPost, moderationOpts)
+      //     : undefined
+      // return !!mod
+      //   ?.ui('contentList')
+      //   .blurs.find(
+      //     cause =>
+      //       cause.type === 'label' &&
+      //       cause.labelDef.identifier === '!no-unauthenticated',
+      //   )
+      return false
+    },
+    [
+      /*rootPost, moderationOpts*/
+    ],
+  )
 
   // Values used for proper rendering of parents
   const ref = useRef<ListMethods>(null)
@@ -798,9 +800,9 @@ function* flattenThreadReplies(
 ): Generator<YieldedItem, HiddenReplyType> {
   if (node.type === 'post') {
     // dont show pwi-opted-out posts to logged out users
-    if (!currentDid && hasPwiOptOut(node)) {
-      return HiddenReplyType.None
-    }
+    // if (!currentDid && hasPwiOptOut(node)) {
+    //   return HiddenReplyType.None
+    // }
 
     // handle blurred items
     if (node.ctx.depth > 0) {
@@ -865,9 +867,9 @@ function* flattenThreadReplies(
   return HiddenReplyType.None
 }
 
-function hasPwiOptOut(node: ThreadPost) {
-  return !!node.post.author.labels?.find(l => l.val === '!no-unauthenticated')
-}
+// function hasPwiOptOut(node: ThreadPost) {
+//   return false /*!!node.post.author.labels?.find(l => l.val === '!no-unauthenticated')*/
+// }
 
 function hasBranchingReplies(node?: ThreadNode) {
   if (!node) {

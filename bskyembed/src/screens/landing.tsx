@@ -97,9 +97,9 @@ function LandingPage() {
         if (!AppBskyFeedDefs.isThreadViewPost(data.thread)) {
           throw new Error('Post not found')
         }
-        const pwiOptOut = !!data.thread.post.author.labels?.find(
+        const pwiOptOut = false /*!!data.thread.post.author.labels?.find(
           label => label.val === '!no-unauthenticated',
-        )
+        )*/
         if (pwiOptOut) {
           throw new Error(
             'The author of this post has requested their posts not be displayed on external sites.',

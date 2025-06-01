@@ -50,9 +50,9 @@ agent
     if (!AppBskyFeedDefs.isThreadViewPost(data.thread)) {
       throw new Error('Expected a ThreadViewPost')
     }
-    const pwiOptOut = !!data.thread.post.author.labels?.find(
+    const pwiOptOut = false /*!!data.thread.post.author.labels?.find(
       label => label.val === '!no-unauthenticated',
-    )
+      )*/
     if (pwiOptOut) {
       render(<PwiOptOut thread={data.thread} />, root)
     } else {

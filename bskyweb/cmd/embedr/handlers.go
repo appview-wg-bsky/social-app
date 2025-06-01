@@ -36,11 +36,11 @@ func (srv *Server) getBlueskyPost(ctx context.Context, did syntax.DID, rkey synt
 	}
 
 	postView := tpv.Thread.FeedDefs_ThreadViewPost.Post
-	for _, label := range postView.Author.Labels {
-		if label.Src == postView.Author.Did && label.Val == "!no-unauthenticated" {
-			return nil, ErrPostNotPublic
-		}
-	}
+	// for _, label := range postView.Author.Labels {
+	// 	if label.Src == postView.Author.Did && label.Val == "!no-unauthenticated" {
+	// 		return nil, ErrPostNotPublic
+	// 	}
+	// }
 	return postView, nil
 }
 
