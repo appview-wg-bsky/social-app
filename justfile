@@ -33,9 +33,6 @@ postbuild-web:
     # we need to copy the static iframe html to support youtube embeds
     cp -r bskyweb/static/iframe/ web-build/iframe
 
-    # copy our static pages over!
-    cp -r deer-static-about web-build/about
-
 [group('dev')]
 dev-android-setup: prebuild-android
     yarn android
@@ -51,4 +48,3 @@ dev-web-functions: build-web
 [group('lint')]
 typecheck:
     yarn typecheck
-

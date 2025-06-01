@@ -30,7 +30,7 @@ export function AboutSettingsScreen({}: Props) {
   const {_, i18n} = useLingui()
   const [devModeEnabled, setDevModeEnabled] = useDevMode()
   const [demoModeEnabled, setDemoModeEnabled] = useDemoMode()
-  const stableID = `DEER_SOCIAL_OOPS`
+  const stableID = `ZEPPELIN_SOCIAL_OOPS`
 
   const {mutate: onClearImageCache, isPending: isClearingImageCache} =
     useMutation({
@@ -78,7 +78,7 @@ export function AboutSettingsScreen({}: Props) {
       <Layout.Content>
         <SettingsList.Container>
           <SettingsList.LinkItem
-            to="https://deer.social/about/tos"
+            to="https://zeppelin.social/about/tos"
             label={_(msg`Terms of Service`)}>
             <SettingsList.ItemIcon icon={NewspaperIcon} />
             <SettingsList.ItemText>
@@ -86,7 +86,7 @@ export function AboutSettingsScreen({}: Props) {
             </SettingsList.ItemText>
           </SettingsList.LinkItem>
           <SettingsList.LinkItem
-            to="https://deer.social/about/privacy"
+            to="https://zeppelin.social/about/privacy"
             label={_(msg`Privacy Policy`)}>
             <SettingsList.ItemIcon icon={NewspaperIcon} />
             <SettingsList.ItemText>
