@@ -5,7 +5,11 @@ export const LOCAL_DEV_SERVICE =
   Platform.OS === 'android' ? 'http://10.0.2.2:2583' : 'http://localhost:2583'
 export const STAGING_SERVICE = 'https://staging.bsky.dev'
 export const BSKY_SERVICE = 'https://bsky.social'
-export const PUBLIC_BSKY_SERVICE = 'https://bsky.zeppelin.social'
+export const ZEPPELIN_APPVIEW_HOST = 'bsky.zeppelin.social'
+export const ZEPPELIN_APPVIEW_SERVICE = `https://${ZEPPELIN_APPVIEW_HOST}`
+export const ZEPPELIN_APPVIEW_DID = `did:web:${ZEPPELIN_APPVIEW_HOST}`
+export const ZEPPELIN_APPVIEW_PROXY = `${ZEPPELIN_APPVIEW_DID}#bsky_appview`
+export const PUBLIC_BSKY_SERVICE = ZEPPELIN_APPVIEW_SERVICE
 export const DEFAULT_SERVICE = BSKY_SERVICE
 export const HELP_DESK_URL = `https://github.com/appview-wg-bsky/social-app/issues/new/choose`
 export const EMBED_SERVICE = 'https://embed.bsky.app'

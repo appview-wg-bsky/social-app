@@ -31,7 +31,7 @@ export const envToCfg = (env: Environment): Config => {
   const serviceCfg: ServiceConfig = {
     port: env.port ?? 3000,
     version: env.version,
-    appviewUrl: env.appviewUrl ?? 'https://api.bsky.app',
+    appviewUrl: env.appviewUrl ?? 'https://bsky.zeppelin.social',
     originVerify: env.originVerify,
   }
   return {

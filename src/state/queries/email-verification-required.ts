@@ -1,5 +1,7 @@
 import {useQuery} from '@tanstack/react-query'
 
+import {ZEPPELIN_APPVIEW_SERVICE} from '#/lib/constants'
+
 interface ServiceConfig {
   checkEmailConfirmed: boolean
 }
@@ -9,7 +11,7 @@ export function useServiceConfigQuery() {
     queryKey: ['service-config'],
     queryFn: async () => {
       const res = await fetch(
-        'https://api.bsky.app/xrpc/app.bsky.unspecced.getConfig',
+        `${ZEPPELIN_APPVIEW_SERVICE}/xrpc/app.bsky.unspecced.getConfig`,
       )
       if (!res.ok) {
         return {

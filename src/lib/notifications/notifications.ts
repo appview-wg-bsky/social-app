@@ -8,11 +8,12 @@ import {Logger} from '#/logger'
 import {devicePlatform, isAndroid, isNative} from '#/platform/detection'
 import {type SessionAccount, useAgent, useSession} from '#/state/session'
 import BackgroundNotificationHandler from '../../../modules/expo-background-notification-handler'
+import {ZEPPELIN_APPVIEW_DID} from '../constants'
 
 const SERVICE_DID = (serviceUrl?: string) =>
   serviceUrl?.includes('staging')
     ? 'did:web:api.staging.bsky.dev'
-    : 'did:web:api.bsky.app'
+    : ZEPPELIN_APPVIEW_DID
 
 const logger = Logger.create(Logger.Context.Notifications)
 

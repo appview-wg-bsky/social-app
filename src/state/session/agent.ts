@@ -1,4 +1,4 @@
-import {AtpSessionData, AtpSessionEvent, BskyAgent} from '@atproto/api'
+import {type AtpSessionData, type AtpSessionEvent, BskyAgent} from '@atproto/api'
 import {TID} from '@atproto/common-web'
 
 import {networkRetry} from '#/lib/async/retry'
@@ -8,6 +8,7 @@ import {
   IS_PROD_SERVICE,
   PUBLIC_BSKY_SERVICE,
   TIMELINE_SAVED_FEED,
+  ZEPPELIN_APPVIEW_PROXY,
 } from '#/lib/constants'
 import {tryFetchGates} from '#/lib/statsig/statsig'
 import {getAge} from '#/lib/strings/time'
@@ -19,7 +20,7 @@ import {
   configureModerationForAccount,
   configureModerationForGuest,
 } from './moderation'
-import {SessionAccount} from './types'
+import {type SessionAccount} from './types'
 import {isSessionExpired, isSignupQueued} from './util'
 
 export function createPublicAgent() {
@@ -282,6 +283,8 @@ class BskyAppAgent extends BskyAgent {
     await Promise.all([gates, moderation])
 
     // Now the agent is ready.
+    this.configureProxy(ZEPPELIN_APPVIEW_PROXY)
+
     const account = agentToSessionAccountOrThrow(this)
     let lastSession = this.sessionManager.session
     this.persistSessionHandler = event => {

@@ -1,5 +1,6 @@
 import {AtpAgent} from '@atproto/api'
 
+import {ZEPPELIN_APPVIEW_SERVICE} from '#/lib/constants'
 import {type AnyProfileView} from '#/types/bsky/profile'
 
 type PResp = Awaited<ReturnType<AtpAgent['getProfile']>>
@@ -136,7 +137,7 @@ class NoscriptHandler {
 }
 
 export async function onRequest(context) {
-  const agent = new AtpAgent({service: 'https://public.api.bsky.app/'})
+  const agent = new AtpAgent({service: ZEPPELIN_APPVIEW_SERVICE})
   const {request, env} = context
   const origin = new URL(request.url).origin
 
