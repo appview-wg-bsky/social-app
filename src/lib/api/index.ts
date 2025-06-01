@@ -143,23 +143,6 @@ export async function post(
       })
     }
 
-    if (
-      thread.postgate.embeddingRules?.length ||
-      thread.postgate.detachedEmbeddingUris?.length
-    ) {
-      writes.push({
-        $type: 'com.atproto.repo.applyWrites#create',
-        collection: 'app.bsky.feed.postgate',
-        rkey: rkey,
-        value: {
-          ...thread.postgate,
-          $type: 'app.bsky.feed.postgate',
-          createdAt: now.toISOString(),
-          post: uri,
-        },
-      })
-    }
-
     // Prepare a ref to the current post for the next post in the thread.
     const ref = {
       cid: await computeCid(record),

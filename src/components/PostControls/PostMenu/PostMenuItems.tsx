@@ -298,22 +298,17 @@ let PostMenuItems = ({
   }
 
   const onToggleQuotePostAttachment = async () => {
-    if (!quoteEmbed) return
+    if (!quoteEmbed || !quoteEmbed.isDetached) return
 
-    const action = quoteEmbed.isDetached ? 'reattach' : 'detach'
-    const isDetach = action === 'detach'
+    const action = 'reattach'
 
     try {
       await toggleQuoteDetachment({
         post,
         quoteUri: quoteEmbed.uri,
-        action: quoteEmbed.isDetached ? 'reattach' : 'detach',
+        action,
       })
-      Toast.show(
-        isDetach
-          ? _(msg`Quote post was successfully detached`)
-          : _(msg`Quote post was re-attached`),
-      )
+      Toast.show(_(msg`Quote post was re-attached`))
     } catch (e: any) {
       Toast.show(
         _(msg({message: 'Updating quote attachment failed', context: 'toast'})),
@@ -325,7 +320,8 @@ let PostMenuItems = ({
   const canHidePostForMe = !isAuthor && !isPostHidden
   const canHideReplyForEveryone =
     !isAuthor && isRootPostAuthor && !isPostHidden && isReply
-  const canDetachQuote = quoteEmbed && quoteEmbed.isOwnedByViewer
+  const canReattachQuote =
+    quoteEmbed && quoteEmbed.isOwnedByViewer && quoteEmbed.isDetached
 
   const onToggleReplyVisibility = async () => {
     // TODO no threadgate?
@@ -608,7 +604,7 @@ let PostMenuItems = ({
         )}
 
         {hasSession &&
-          (canHideReplyForEveryone || canDetachQuote || canHidePostForMe) && (
+          (canHideReplyForEveryone || canReattachQuote || canHidePostForMe) && (
             <>
               <Menu.Divider />
               <Menu.Group>
@@ -654,25 +650,13 @@ let PostMenuItems = ({
                   </Menu.Item>
                 )}
 
-                {canDetachQuote && (
+                {canReattachQuote && (
                   <Menu.Item
                     disabled={isDetachPending}
                     testID="postDropdownHideBtn"
-                    label={
-                      quoteEmbed.isDetached
-                        ? _(msg`Re-attach quote`)
-                        : _(msg`Detach quote`)
-                    }
-                    onPress={
-                      quoteEmbed.isDetached
-                        ? onToggleQuotePostAttachment
-                        : () => quotePostDetachConfirmControl.open()
-                    }>
-                    <Menu.ItemText>
-                      {quoteEmbed.isDetached
-                        ? _(msg`Re-attach quote`)
-                        : _(msg`Detach quote`)}
-                    </Menu.ItemText>
+                    label={_(msg`Re-attach quote`)}
+                    onPress={onToggleQuotePostAttachment}>
+                    <Menu.ItemText>{_(msg`Re-attach quote`)}</Menu.ItemText>
                     <Menu.ItemIcon
                       icon={
                         isDetachPending
