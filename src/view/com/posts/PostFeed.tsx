@@ -1,4 +1,12 @@
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  memo,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   ActivityIndicator,
   AppState,
@@ -272,7 +280,7 @@ let PostFeed = ({
   initialNumToRender?: number
   isVideoFeed?: boolean
   useRepostCarousel?: boolean
-}): React.ReactNode => {
+}): ReactNode => {
   const {_} = useLingui()
   const queryClient = useQueryClient()
   const {currentAccount, hasSession} = useSession()
@@ -411,7 +419,7 @@ let PostFeed = ({
     useRepostCarousel = repostCarouselEnabled
   }
 
-  const feedItems: FeedRow[] = React.useMemo(() => {
+  const feedItems: FeedRow[] = useMemo(() => {
     // wraps a slice item, and replaces it with a showLessFollowup item
     // if the user has pressed show less on it
     const sliceItem = (row: Extract<FeedRow, {type: 'sliceItem'}>) => {

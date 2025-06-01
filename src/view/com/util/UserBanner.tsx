@@ -1,4 +1,4 @@
-import React from 'react'
+import {useCallback, useState} from 'react'
 import {
   Pressable,
   StyleSheet,
@@ -23,6 +23,7 @@ import {
 import {compressIfNeeded} from '#/lib/media/manip'
 import {openCamera, openCropper, openPicker} from '#/lib/media/picker'
 import {type PickerImage} from '#/lib/media/picker.shared'
+import {useTheme} from '#/lib/ThemeContext'
 import {logger} from '#/logger'
 import {isAndroid, isNative} from '#/platform/detection'
 import {
@@ -33,7 +34,7 @@ import {
 import {useLightboxControls} from '#/state/lightbox'
 import {EditImageDialog} from '#/view/com/composer/photos/EditImageDialog'
 import {EventStopper} from '#/view/com/util/EventStopper'
-import {atoms as a, tokens, useTheme} from '#/alf'
+import {atoms as a, tokens, useTheme as useAlfTheme} from '#/alf'
 import {useDialogControl} from '#/components/Dialog'
 import {useSheetWrapper} from '#/components/Dialog/sheet-wrapper'
 import {
@@ -55,17 +56,18 @@ export function UserBanner({
   moderation?: ModerationUI
   onSelectNewBanner?: (img: PickerImage | null) => void
 }) {
-  const t = useTheme()
+  const theme = useTheme()
+  const t = useAlfTheme()
   const {_} = useLingui()
   const {requestCameraAccessIfNeeded} = useCameraPermission()
   const {requestPhotoAccessIfNeeded} = usePhotoLibraryPermission()
   const sheetWrapper = useSheetWrapper()
-  const [rawImage, setRawImage] = React.useState<ComposerImage | undefined>()
+  const [rawImage, setRawImage] = useState<ComposerImage | undefined>()
   const editImageDialogControl = useDialogControl()
   const {openLightbox} = useLightboxControls()
   const bannerRef = useHandleRef()
 
-  const onOpenCamera = React.useCallback(async () => {
+  const onOpenCamera = useCallback(async () => {
     if (!(await requestCameraAccessIfNeeded())) {
       return
     }
@@ -117,7 +119,7 @@ export function UserBanner({
     onSelectNewBanner?.(null)
   }, [onSelectNewBanner])
 
-  const onChangeEditImage = React.useCallback(
+  const onChangeEditImage = useCallback(
     async (image: ComposerImage) => {
       const compressed = await compressImage(image)
       onSelectNewBanner?.(compressed)
@@ -125,7 +127,7 @@ export function UserBanner({
     [onSelectNewBanner],
   )
 
-  const _openLightbox = React.useCallback(
+  const _openLightbox = useCallback(
     (uri: string, thumbRect: MeasuredDimensions | null) => {
       openLightbox({
         images: [
@@ -144,7 +146,7 @@ export function UserBanner({
     [openLightbox],
   )
 
-  const onPressBanner = React.useCallback(() => {
+  const onPressBanner = useCallback(() => {
     if (banner && !(moderation?.blur && moderation?.noOverride)) {
       const bannerHandle = bannerRef.current
       runOnUI(() => {
