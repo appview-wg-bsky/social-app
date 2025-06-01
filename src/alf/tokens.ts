@@ -70,7 +70,7 @@ export const gradients = {
   sky: {
     values: [
       [0, '#FCC58F'],
-      [1, '#FFD170'],
+      [1, '#FFCD70'],
     ],
     hover_value: '#FCC58F',
   },
