@@ -1,8 +1,8 @@
 import React from 'react'
-import {ModerationUI} from '@atproto/api'
+import {type ModerationUI} from '@atproto/api'
 
 import {
-  ModerationCauseDescription,
+  type ModerationCauseDescription,
   useModerationCauseDescription,
 } from '#/lib/moderation/useModerationCauseDescription'
 import {
@@ -43,13 +43,13 @@ export function Outer({
   const info = useModerationCauseDescription(blur)
 
   const meta = {
-    isNoPwi: Boolean(
+    isNoPwi: false /*Boolean(
       modui?.blurs.find(
         cause =>
           cause.type === 'label' &&
           cause.labelDef.identifier === '!no-unauthenticated',
       ),
-    ),
+      )*/,
     allowOverride: allowOverride ?? !modui?.noOverride,
   }
 

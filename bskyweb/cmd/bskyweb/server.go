@@ -476,11 +476,11 @@ func (srv *Server) WebPost(c echo.Context) error {
 		return c.Render(http.StatusOK, "post.html", data)
 	}
 	unauthedViewingOkay := true
-	for _, label := range pv.Labels {
-		if label.Src == pv.Did && label.Val == "!no-unauthenticated" {
-			unauthedViewingOkay = false
-		}
-	}
+	// for _, label := range pv.Labels {
+	// 	if label.Src == pv.Did && label.Val == "!no-unauthenticated" {
+	// 		unauthedViewingOkay = false
+	// 	}
+	// }
 
 	if !unauthedViewingOkay {
 		return c.Render(http.StatusOK, "post.html", data)
@@ -582,11 +582,11 @@ func (srv *Server) WebProfile(c echo.Context) error {
 		return c.Render(http.StatusOK, "profile.html", data)
 	}
 	unauthedViewingOkay := true
-	for _, label := range pv.Labels {
-		if label.Src == pv.Did && label.Val == "!no-unauthenticated" {
-			unauthedViewingOkay = false
-		}
-	}
+	// for _, label := range pv.Labels {
+	// 	if label.Src == pv.Did && label.Val == "!no-unauthenticated" {
+	// 		unauthedViewingOkay = false
+	// 	}
+	// }
 	if !unauthedViewingOkay {
 		return c.Render(http.StatusOK, "profile.html", data)
 	}

@@ -54,9 +54,9 @@ export function Embed({
 
       // Case 3.1: Post
       if (AppBskyEmbedRecord.isViewRecord(record)) {
-        const pwiOptOut = !!record.author.labels?.find(
+        const pwiOptOut = false /*!!record.author.labels?.find(
           label => label.val === '!no-unauthenticated',
-        )
+        )*/
         if (pwiOptOut) {
           return (
             <Info>

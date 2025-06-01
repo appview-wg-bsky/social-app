@@ -48,11 +48,16 @@ let ShareMenuItems = ({
     return makeProfileLink(postAuthor, 'post', urip.rkey)
   }, [postUri, postAuthor])
 
-  const hideInPWI = useMemo(() => {
-    return !!postAuthor.labels?.find(
+  const hideInPWI = useMemo(
+    () => {
+      return false /*!!postAuthor.labels?.find(
       label => label.val === '!no-unauthenticated',
-    )
-  }, [postAuthor])
+      )*/
+    },
+    [
+      /*postAuthor*/
+    ],
+  )
 
   const onCopyLink = () => {
     logger.metric('share:press:copyLink', {}, {statsig: true})
