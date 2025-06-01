@@ -1,6 +1,6 @@
 import React from 'react'
-import {StyleProp, View, ViewStyle} from 'react-native'
-import {AppBskyFeedDefs, AppBskyFeedPostgate, AtUri} from '@atproto/api'
+import {type StyleProp, View, type ViewStyle} from 'react-native'
+import {type AppBskyFeedDefs, type AppBskyFeedPostgate, AtUri} from '@atproto/api'
 import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {useQueryClient} from '@tanstack/react-query'
@@ -22,7 +22,7 @@ import {
 import {
   createThreadgateViewQueryKey,
   getThreadgateView,
-  ThreadgateAllowUISetting,
+  type ThreadgateAllowUISetting,
   threadgateViewToAllowUISetting,
   useSetThreadgateAllowMutation,
   useThreadgateViewQuery,
@@ -305,6 +305,7 @@ export function PostInteractionSettingsForm({
 
   const onChangeQuotesEnabled = React.useCallback(
     (enabled: boolean) => {
+      if (!enabled) return
       setQuotesEnabled(enabled)
       onChangePostgate(
         createPostgateRecord({
@@ -324,28 +325,26 @@ export function PostInteractionSettingsForm({
     <View>
       <View style={[a.flex_1, a.gap_md]}>
         <View style={[a.gap_lg]}>
-          <View style={[a.gap_sm]}>
-            <Text style={[a.font_bold, a.text_lg]}>
-              <Trans>Quote settings</Trans>
-            </Text>
-
-            <Toggle.Item
-              name="quoteposts"
-              type="checkbox"
-              label={
-                quotesEnabled
-                  ? _(msg`Click to disable quote posts of this post.`)
-                  : _(msg`Click to enable quote posts of this post.`)
-              }
-              value={quotesEnabled}
-              onChange={onChangeQuotesEnabled}
-              style={[a.justify_between, a.pt_xs]}>
-              <Text style={[t.atoms.text_contrast_medium]}>
-                <Trans>Allow quote posts</Trans>
+          {!quotesEnabled && (
+            <View style={[a.gap_sm]}>
+              <Text style={[a.font_bold, a.text_lg]}>
+                <Trans>Quote settings</Trans>
               </Text>
-              <Toggle.Switch />
-            </Toggle.Item>
-          </View>
+
+              <Toggle.Item
+                name="quoteposts"
+                type="checkbox"
+                label={_(msg`Click to enable quote posts of this post.`)}
+                value={quotesEnabled}
+                onChange={onChangeQuotesEnabled}
+                style={[a.justify_between, a.pt_xs]}>
+                <Text style={[t.atoms.text_contrast_medium]}>
+                  <Trans>Allow quote posts</Trans>
+                </Text>
+                <Toggle.Switch />
+              </Toggle.Item>
+            </View>
+          )}
 
           <Divider />
 
