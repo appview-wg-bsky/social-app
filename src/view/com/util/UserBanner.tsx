@@ -6,16 +6,17 @@ import {
   View,
 } from 'react-native'
 import {
+  measure,
   type MeasuredDimensions,
   runOnJS,
   runOnUI,
+  useAnimatedRef,
 } from 'react-native-reanimated'
 import {Image} from 'expo-image'
 import {type ModerationUI} from '@atproto/api'
 import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 
-import {measureHandle, useHandleRef} from '#/lib/hooks/useHandleRef'
 import {
   useCameraPermission,
   usePhotoLibraryPermission,
@@ -65,7 +66,7 @@ export function UserBanner({
   const [rawImage, setRawImage] = useState<ComposerImage | undefined>()
   const editImageDialogControl = useDialogControl()
   const {openLightbox} = useLightboxControls()
-  const bannerRef = useHandleRef()
+  const bannerRef = useAnimatedRef()
 
   const onOpenCamera = useCallback(async () => {
     if (!(await requestCameraAccessIfNeeded())) {
@@ -148,10 +149,9 @@ export function UserBanner({
 
   const onPressBanner = useCallback(() => {
     if (banner && !(moderation?.blur && moderation?.noOverride)) {
-      const bannerHandle = bannerRef.current
       runOnUI(() => {
         'worklet'
-        const rect = measureHandle(bannerHandle)
+        const rect = measure(bannerRef)
         runOnJS(_openLightbox)(banner, rect)
       })()
     }
